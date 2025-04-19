@@ -29,6 +29,9 @@
       @close="hideBottomSheet"
       @submit="handleTransactionSubmit"
     />
+    
+    <!-- PWA update prompt -->
+    <ReloadPrompt />
   </div>
 </template>
 
@@ -42,6 +45,7 @@ import TransactionsPage from "./pages/TransactionsPage.vue";
 import ReportsPage from "./pages/ReportsPage.vue";
 import BudgetsPage from "./pages/BudgetsPage.vue";
 import AddTransactionSheet from "./components/AddTransactionSheet.vue";
+import ReloadPrompt from "./components/pwa/ReloadPrompt.vue";
 
 export default {
   components: {
@@ -51,7 +55,8 @@ export default {
     TransactionsPage,
     ReportsPage,
     BudgetsPage,
-    AddTransactionSheet
+    AddTransactionSheet,
+    ReloadPrompt
   },
   setup() {
     const currentPage = ref("page-home");
