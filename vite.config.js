@@ -5,5 +5,7 @@ export default defineConfig({
   plugins: [vue()],
   server: {
     port: 3000
-  }
+  },
+  // Add base config for production deployments
+  base: './'
 });
