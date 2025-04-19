@@ -3,6 +3,7 @@ import { createPinia } from 'pinia'
 import { registerSW } from 'virtual:pwa-register'
 import App from './App.vue'
 import './styles.css'
+import { useTransactionsStore } from './stores/transactionsStore'
 
 // Register service worker
 const updateSW = registerSW({
@@ -20,4 +21,10 @@ const app = createApp(App)
 const pinia = createPinia()
 
 app.use(pinia)
+
+// Initialize the app
 app.mount('#app')
+
+// Once the app is mounted, load the transactions from IndexedDB
+const transactionsStore = useTransactionsStore()
+transactionsStore.loadTransactions()

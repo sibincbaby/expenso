@@ -41,16 +41,19 @@
 
 <script>
 import { ref } from 'vue';
+import { useCurrencyStore } from '../stores/currencyStore';
 
 export default {
   name: 'BudgetsPage',
   setup() {
+    const currencyStore = useCurrencyStore();
+    
     const budgets = ref([
       {
         name: 'Groceries',
         icon: 'shopping_basket',
-        limit: '$400.00',
-        spent: '$325.50',
+        limit: currencyStore.formatAmount(400.00),
+        spent: currencyStore.formatAmount(325.50),
         percentUsed: 81,
         statusText: 'Warning',
         statusClass: 'warning',
@@ -59,8 +62,8 @@ export default {
       {
         name: 'Entertainment',
         icon: 'movie',
-        limit: '$200.00',
-        spent: '$142.25',
+        limit: currencyStore.formatAmount(200.00),
+        spent: currencyStore.formatAmount(142.25),
         percentUsed: 71,
         statusText: 'On Track',
         statusClass: 'ok',
@@ -69,8 +72,8 @@ export default {
       {
         name: 'Dining Out',
         icon: 'restaurant',
-        limit: '$250.00',
-        spent: '$267.80',
+        limit: currencyStore.formatAmount(250.00),
+        spent: currencyStore.formatAmount(267.80),
         percentUsed: 107,
         statusText: 'Over Budget',
         statusClass: 'error',
@@ -79,8 +82,8 @@ export default {
       {
         name: 'Transportation',
         icon: 'directions_car',
-        limit: '$150.00',
-        spent: '$83.47',
+        limit: currencyStore.formatAmount(150.00),
+        spent: currencyStore.formatAmount(83.47),
         percentUsed: 56,
         statusText: 'On Track',
         statusClass: 'ok',

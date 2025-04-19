@@ -1,65 +1,10 @@
 import { defineStore } from 'pinia';
+import db from '../db/db';
 
 export const useTransactionsStore = defineStore('transactions', {
   state: () => ({
-    transactions: [
-      { 
-        id: 1,
-        title: 'Paycheck', 
-        date: 'April 15, 2025', 
-        amount: 1620.25,
-        icon: 'payments',
-        type: 'incoming'
-      },
-      {
-        id: 2,
-        title: 'Dinner with friends',
-        date: 'April 15, 2025',
-        amount: 62.80,
-        icon: 'restaurant',
-        type: 'outgoing'
-      },
-      {
-        id: 3,
-        title: 'Grocery shopping',
-        date: 'April 18, 2025',
-        amount: 87.32,
-        icon: 'shopping_bag',
-        type: 'outgoing'
-      },
-      { 
-        id: 4,
-        title: 'Rent payment', 
-        date: 'April 5, 2025', 
-        amount: 950.00,
-        icon: 'home',
-        type: 'outgoing'
-      },
-      { 
-        id: 5,
-        title: 'Freelance work', 
-        date: 'April 10, 2025', 
-        amount: 250.00,
-        icon: 'laptop',
-        type: 'incoming'
-      },
-      { 
-        id: 6,
-        title: 'Electric bill', 
-        date: 'April 8, 2025', 
-        amount: 75.42,
-        icon: 'electric_bolt',
-        type: 'outgoing'
-      },
-      {
-        id: 7,
-        title: 'Paycheck',
-        date: 'April 1, 2025',
-        amount: 1620.25,
-        icon: 'payments',
-        type: 'incoming'
-      }
-    ]
+    transactions: [],
+    loading: false
   }),
 
   getters: {
@@ -143,30 +88,81 @@ export const useTransactionsStore = defineStore('transactions', {
   },
 
   actions: {
+    // Load all transactions from the database
+    async loadTransactions() {
+      this.loading = true;
+      try {
+        this.transactions = await db.transactions.toArray();
+      } catch (error) {
+        console.error('Failed to load transactions:', error);
+      } finally {
+        this.loading = false;
+      }
+    },
+    
     // Add a new transaction
-    addTransaction(transaction) {
-      const newId = Math.max(0, ...this.transactions.map(t => t.id)) + 1;
-      this.transactions.push({
-        id: newId,
-        ...transaction
-      });
+    async addTransaction(transaction) {
+      try {
+        // Add to database
+        const id = await db.transactions.add(transaction);
+        
+        // Update local state
+        this.transactions.push({ id, ...transaction });
+        
+        return id;
+      } catch (error) {
+        console.error('Failed to add transaction:', error);
+        throw error;
+      }
     },
     
     // Delete a transaction by id
-    deleteTransaction(id) {
-      const index = this.transactions.findIndex(t => t.id === id);
-      if (index !== -1) {
-        this.transactions.splice(index, 1);
+    async deleteTransaction(id) {
+      try {
+        // Delete from database
+        await db.transactions.delete(id);
+        
+        // Update local state
+        const index = this.transactions.findIndex(t => t.id === id);
+        if (index !== -1) {
+          this.transactions.splice(index, 1);
+        }
+      } catch (error) {
+        console.error('Failed to delete transaction:', error);
+        throw error;
       }
     },
     
     // Search transactions by query
-    searchTransactions(query) {
+    async searchTransactions(query) {
       query = query.toLowerCase();
-      return this.transactions.filter(t => 
-        t.title.toLowerCase().includes(query) ||
-        t.date.toLowerCase().includes(query)
-      );
+      try {
+        const allTransactions = await db.transactions.toArray();
+        return allTransactions.filter(t => 
+          t.title.toLowerCase().includes(query) ||
+          t.date.toLowerCase().includes(query)
+        );
+      } catch (error) {
+        console.error('Failed to search transactions:', error);
+        return [];
+      }
+    },
+    
+    // Update a transaction
+    async updateTransaction(id, updatedData) {
+      try {
+        // Update in database
+        await db.transactions.update(id, updatedData);
+        
+        // Update local state
+        const index = this.transactions.findIndex(t => t.id === id);
+        if (index !== -1) {
+          this.transactions[index] = { ...this.transactions[index], ...updatedData };
+        }
+      } catch (error) {
+        console.error('Failed to update transaction:', error);
+        throw error;
+      }
     }
   }
 });

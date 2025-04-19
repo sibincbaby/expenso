@@ -46,10 +46,12 @@
 
 <script>
 import { ref } from 'vue';
+import { useCurrencyStore } from '../stores/currencyStore';
 
 export default {
   name: 'ReportsPage',
   setup() {
+    const currencyStore = useCurrencyStore();
     const activeFilter = ref('month');
     
     const categories = ref([
@@ -57,31 +59,31 @@ export default {
         name: 'Housing',
         icon: 'home',
         percent: 45,
-        amount: '$950.00'
+        amount: currencyStore.formatAmount(950.00)
       },
       {
         name: 'Food',
         icon: 'restaurant',
         percent: 20,
-        amount: '$425.50'
+        amount: currencyStore.formatAmount(425.50)
       },
       {
         name: 'Transportation',
         icon: 'directions_car',
         percent: 15,
-        amount: '$312.75'
+        amount: currencyStore.formatAmount(312.75)
       },
       {
         name: 'Entertainment',
         icon: 'movie',
         percent: 10,
-        amount: '$209.40'
+        amount: currencyStore.formatAmount(209.40)
       },
       {
         name: 'Utilities',
         icon: 'water_drop',
         percent: 10,
-        amount: '$210.47'
+        amount: currencyStore.formatAmount(210.47)
       }
     ]);
     
