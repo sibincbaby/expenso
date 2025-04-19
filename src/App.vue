@@ -38,6 +38,7 @@
 <script>
 import { ref, onMounted } from "vue";
 import { useCurrencyStore } from "./stores/currencyStore";
+import { useTransactionsStore } from "./stores/transactionsStore";
 import AppHeader from "./components/AppHeader.vue";
 import BottomNavigation from "./components/BottomNavigation.vue";
 import HomePage from "./pages/HomePage.vue";
@@ -66,8 +67,9 @@ export default {
     let lastScrollTop = 0;
     const scrollThreshold = 10;
     
-    // Initialize the currency store
+    // Initialize stores
     const currencyStore = useCurrencyStore();
+    const transactionsStore = useTransactionsStore();
 
     function setActivePage(pageId) {
       currentPage.value = pageId;
@@ -92,10 +94,30 @@ export default {
     }
 
     function handleTransactionSubmit(transactionText) {
-      console.log("Transaction Submitted:", transactionText);
+      // Process the transaction text and add to store
+      const today = new Date();
+      const dateStr = today.toLocaleDateString('en-US', { 
+        month: 'long', 
+        day: 'numeric', 
+        year: 'numeric' 
+      });
+      
+      // For simplicity, create a basic transaction
+      const newTransaction = {
+        title: transactionText,
+        date: dateStr,
+        amount: 0.00, // Default amount, would be parsed in a real app
+        icon: 'receipt_long', // Default icon
+        type: 'outgoing' // Default type
+      };
+      
+      // Add to transactions store
+      transactionsStore.addTransaction(newTransaction);
+      
       hideBottomSheet();
-      // Here you would normally process the transaction
-      // and update your state/store
+      
+      // Navigate to transactions page to see the new entry
+      setActivePage('page-transactions');
     }
     
     function handleFabScroll(event) {
@@ -130,7 +152,8 @@ export default {
       profileMenuVisible,
       bottomSheetVisible,
       fabExtended,
-      currencyStore, // Expose currency store to the template
+      currencyStore,
+      transactionsStore,
       setActivePage,
       toggleProfileMenu,
       showBottomSheet,

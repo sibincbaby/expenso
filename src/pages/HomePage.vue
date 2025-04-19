@@ -13,68 +13,59 @@
     <div class="summary-section">
       <div class="card">
         <div class="card-title">Income</div>
-        <div class="card-amount amount-incoming">{{ currencyStore.formatAmount(3240.50) }}</div>
+        <div class="card-amount amount-incoming">{{ currencyStore.formatAmount(transactionsStore.getCurrentMonthIncome) }}</div>
         <div class="card-subtitle">This month</div>
       </div>
       <div class="card">
         <div class="card-title">Expenses</div>
-        <div class="card-amount amount-outgoing">{{ currencyStore.formatAmount(2108.12) }}</div>
+        <div class="card-amount amount-outgoing">{{ currencyStore.formatAmount(transactionsStore.getCurrentMonthExpenses) }}</div>
         <div class="card-subtitle">This month</div>
       </div>
     </div>
 
     <div class="card card-outlined">
       <div class="card-title">Balance</div>
-      <div class="card-amount amount-neutral">{{ currencyStore.formatAmount(1132.38) }}</div>
+      <div class="card-amount amount-neutral">{{ currencyStore.formatAmount(transactionsStore.getCurrentMonthBalance) }}</div>
       <div class="card-subtitle">Saved this month</div>
     </div>
     
     <h2 class="list-header">Recent Transactions</h2>
     <ul class="transaction-list">
-      <li class="transaction-item">
+      <li class="transaction-item" v-for="transaction in recentTransactions" :key="transaction.id">
         <div class="transaction-icon-bg">
-          <span class="material-symbols-outlined">shopping_bag</span>
+          <span class="material-symbols-outlined">{{ transaction.icon }}</span>
         </div>
         <div class="transaction-details">
-          <div class="transaction-title">Grocery shopping</div>
-          <div class="transaction-subtitle">April 18, 2025</div>
+          <div class="transaction-title">{{ transaction.title }}</div>
+          <div class="transaction-subtitle">{{ transaction.date }}</div>
         </div>
-        <div class="transaction-amount outgoing">{{ currencyStore.formatAmount(87.32) }}</div>
-      </li>
-      <li class="transaction-item">
-        <div class="transaction-icon-bg">
-          <span class="material-symbols-outlined">restaurant</span>
+        <div class="transaction-amount" :class="transaction.type === 'incoming' ? 'incoming' : 'outgoing'">
+          {{ currencyStore.formatAmount(transaction.amount) }}
         </div>
-        <div class="transaction-details">
-          <div class="transaction-title">Dinner with friends</div>
-          <div class="transaction-subtitle">April 15, 2025</div>
-        </div>
-        <div class="transaction-amount outgoing">{{ currencyStore.formatAmount(62.80) }}</div>
-      </li>
-      <li class="transaction-item">
-        <div class="transaction-icon-bg">
-          <span class="material-symbols-outlined">payments</span>
-        </div>
-        <div class="transaction-details">
-          <div class="transaction-title">Paycheck</div>
-          <div class="transaction-subtitle">April 15, 2025</div>
-        </div>
-        <div class="transaction-amount incoming">{{ currencyStore.formatAmount(1620.25) }}</div>
       </li>
     </ul>
   </div>
 </template>
 
 <script>
+import { computed } from 'vue';
 import { useCurrencyStore } from '../stores/currencyStore';
+import { useTransactionsStore } from '../stores/transactionsStore';
 
 export default {
   name: 'HomePage',
   setup() {
     const currencyStore = useCurrencyStore();
+    const transactionsStore = useTransactionsStore();
+    
+    const recentTransactions = computed(() => {
+      return transactionsStore.getRecentTransactions(3);
+    });
     
     return {
-      currencyStore
+      currencyStore,
+      transactionsStore,
+      recentTransactions
     };
   }
 }

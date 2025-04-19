@@ -9,9 +9,13 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
       devOptions: {
-        enabled: true,
-        type: 'module',
-        navigateFallback: 'index.html',
+        // Disable PWA in development mode
+        enabled: false,
+      },
+      workbox: {
+        globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
+        globDirectory: 'dist',
+        globIgnores: ['**/node_modules/**/*']
       },
       manifest: {
         name: 'Expenso',

@@ -37,7 +37,7 @@
     
     <h2 class="list-header">All Transactions</h2>
     <ul class="transaction-list">
-      <li v-for="(transaction, index) in formattedTransactions" :key="index" class="transaction-item">
+      <li v-for="transaction in formattedTransactions" :key="transaction.id" class="transaction-item">
         <div class="transaction-icon-bg">
           <span class="material-symbols-outlined">{{ transaction.icon }}</span>
         </div>
@@ -54,69 +54,27 @@
 <script>
 import { ref, computed } from 'vue';
 import { useCurrencyStore } from '../stores/currencyStore';
+import { useTransactionsStore } from '../stores/transactionsStore';
 
 export default {
   name: 'TransactionsPage',
   setup() {
     const currencyStore = useCurrencyStore();
-    
-    // Sample transaction data - in a real app, this would come from a store or API
-    const transactions = ref([
-      { 
-        title: 'Paycheck', 
-        date: 'April 15, 2025', 
-        amount: 1620.25,
-        icon: 'payments',
-        type: 'incoming'
-      },
-      {
-        title: 'Dinner with friends',
-        date: 'April 15, 2025',
-        amount: 62.80,
-        icon: 'restaurant',
-        type: 'outgoing'
-      },
-      {
-        title: 'Grocery shopping',
-        date: 'April 18, 2025',
-        amount: 87.32,
-        icon: 'shopping_bag',
-        type: 'outgoing'
-      },
-      { 
-        title: 'Rent payment', 
-        date: 'April 5, 2025', 
-        amount: 950.00,
-        icon: 'home',
-        type: 'outgoing'
-      },
-      { 
-        title: 'Freelance work', 
-        date: 'April 10, 2025', 
-        amount: 250.00,
-        icon: 'laptop',
-        type: 'incoming'
-      },
-      { 
-        title: 'Electric bill', 
-        date: 'April 8, 2025', 
-        amount: 75.42,
-        icon: 'electric_bolt',
-        type: 'outgoing'
-      }
-    ]);
+    const transactionsStore = useTransactionsStore();
     
     const searchQuery = ref('');
     const activeFilter = ref('all');
     
     const filteredTransactions = computed(() => {
-      let result = transactions.value;
+      let result = [];
       
       // Filter by type
       if (activeFilter.value === 'expense') {
-        result = result.filter(t => t.type === 'outgoing');
+        result = transactionsStore.getTransactionsByType('outgoing');
       } else if (activeFilter.value === 'income') {
-        result = result.filter(t => t.type === 'incoming');
+        result = transactionsStore.getTransactionsByType('incoming');
+      } else {
+        result = transactionsStore.getAllTransactions;
       }
       
       // Filter by search query
@@ -153,7 +111,8 @@ export default {
       formattedTransactions,
       setFilter,
       filterTransactions,
-      currencyStore
+      currencyStore,
+      transactionsStore
     };
   }
 }
